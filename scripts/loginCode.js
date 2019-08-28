@@ -38,26 +38,31 @@ btnLogIn.on("click", e => {
 
 });
 
-btnCreate.on("click", e => {
+$("#createNew").on("click", e => {
   e.preventDefault();
 
-  console.log("creating User")
-  //TODO: Check 4 valid email address and Password
-  const email = emailInput.val().trim();
-  const fuser = email.split("@")[0];
-  const password = passInput.val().trim();
-  const auth = firebase.auth()
-  const promise = auth.createUserWithEmailAndPassword(email, password);
-  let user = {
-    email: emailInput.val().trim(),
-    list: JSON.stringify({titleList:[]}),
-    idList: JSON.stringify({idList:[]})
+  if (emailInput.val() === "" || passInput.val() === "") {
+    alert("To create an account, simply enter your email and desired password and click the Create Account button")
+  } else {
+
+    console.log("creating User")
+    //TODO: Check 4 valid email address and Password
+    const email = emailInput.val().trim();
+    const fuser = email.split("@")[0];
+    const password = passInput.val().trim();
+    const auth = firebase.auth()
+    const promise = auth.createUserWithEmailAndPassword(email, password);
+    let user = {
+      email: emailInput.val().trim(),
+      list: JSON.stringify({ titleList: [] }),
+      idList: JSON.stringify({ idList: [] })
+    }
+    fireDatabase.ref("/user").child(fuser).set(user);
+    promise.catch(e => {
+      error.text(e.message);
+      error.removeClass("hide");
+    });
   }
-  fireDatabase.ref("/user").child(fuser).set(user);
-  promise.catch(e => {
-    error.text(e.message);
-    error.removeClass("hide");
-  });
 });
 
 btnLogOut.on("click", e => {
@@ -89,11 +94,11 @@ forgotPass.on("click", e => {
         error.removeClass("hide")
         validEmail = false;
       }
-      else{
+      else {
         console.log(e.message)
       }
-    }).then(e=>{
-      if(validEmail){
+    }).then(e => {
+      if (validEmail) {
         $('#myModal').modal('hide')
         console.log("Maybe she loves me")
         error.text("Please check your email for the reset password email.")
@@ -101,34 +106,34 @@ forgotPass.on("click", e => {
         $("#passwordRest").addClass("hide");
         userLogin.removeClass("hide")
       }
-      else{
-        validEmail =false;
+      else {
+        validEmail = false;
         return false;
       }
 
-      validEmail=true;
+      validEmail = true;
     })
   })
 })
 
-function StayLogIn(){
+function StayLogIn() {
   firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-  .then(function() {
-    email = $(email).val()
-    password = $(password).val()
-    return firebase.auth().signInWithEmailAndPassword(email, password);
-  })
-  .catch(function(error) {
-    var errorCode = error.code;
-    var errorMessage = error.message;
-    console.log(errorCode,errorMessage)
-  });
+    .then(function () {
+      email = $(email).val()
+      password = $(password).val()
+      return firebase.auth().signInWithEmailAndPassword(email, password);
+    })
+    .catch(function (error) {
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      console.log(errorCode, errorMessage)
+    });
 }
 let list = {};
 firebase.auth().onAuthStateChanged(firebaseUser => {
   fUser = firebaseUser.email
-  fname=fUser.split("@")
-  user=fname[0];
+  fname = fUser.split("@")
+  user = fname[0];
   console.log(user)
   if (firebaseUser) {
     btnLogOut.removeClass("hide");
@@ -136,7 +141,7 @@ firebase.auth().onAuthStateChanged(firebaseUser => {
     btnCreate.addClass("hide")
     error.addClass("hide");
     StayLogIn();
-    window.location.href ="./main.html"
+    window.location.href = "./main.html"
   }
   else {
     btnLogOut.addClass("hide");
